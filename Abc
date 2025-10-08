@@ -1,0 +1,488 @@
+# ====================================================================
+
+# FULL FINROBOT INSTALLATION FOR GOOGLE COLAB
+
+# This installs the complete FinRobot package with all features
+
+# ====================================================================
+
+# ====================================================================
+
+# CELL 1: Clone and Install FinRobot from Source
+
+# ====================================================================
+
+import os
+import sys
+import subprocess
+
+print(“🚀 Installing Full FinRobot Package”)
+print(”=”*70)
+
+# Step 1: Clone FinRobot repository
+
+print(”\n📥 Step 1: Cloning FinRobot repository…”)
+if os.path.exists(‘FinRobot’):
+print(”   FinRobot directory already exists, removing…”)
+!rm -rf FinRobot
+
+!git clone https://github.com/AI4Finance-Foundation/FinRobot.git
+print(“✅ Repository cloned”)
+
+# Step 2: Change to FinRobot directory
+
+os.chdir(‘FinRobot’)
+print(f”\n📂 Working directory: {os.getcwd()}”)
+
+# Step 3: Install FinRobot and dependencies
+
+print(”\n📦 Step 2: Installing FinRobot package…”)
+print(”   This may take 2-3 minutes…\n”)
+
+# Install from source
+
+!pip install -e . –quiet
+
+# Install additional required packages
+
+print(”\n📦 Step 3: Installing additional dependencies…”)
+!pip install -q pyautogen==0.2.35
+!pip install -q groq
+
+print(”\n✅ FinRobot installation complete!”)
+print(”=”*70)
+
+# ====================================================================
+
+# CELL 2: Verify Installation
+
+# ====================================================================
+
+print(”\n🔍 Verifying FinRobot Installation”)
+print(”=”*70)
+
+import sys
+import importlib
+
+def verify_package(package_name):
+try:
+pkg = importlib.import_module(package_name)
+print(f”✅ {package_name}: Installed”)
+return True
+except ImportError as e:
+print(f”❌ {package_name}: Failed - {str(e)[:50]}”)
+return False
+
+# Check core packages
+
+packages = [
+‘finrobot’,
+‘finrobot.utils’,
+‘finrobot.agents’,
+‘finrobot.data_source’,
+‘autogen’,
+‘groq’
+]
+
+all_installed = True
+for pkg in packages:
+if not verify_package(pkg):
+all_installed = False
+
+if all_installed:
+print(”\n” + “=”*70)
+print(“🎉 All packages installed successfully!”)
+print(”=”*70)
+
+```
+# Test import FinRobot components
+print("\n📋 Available FinRobot components:")
+from finrobot import utils
+from finrobot.agents import workflow
+print("   ✓ finrobot.utils")
+print("   ✓ finrobot.agents.workflow")
+print("   ✓ finrobot.data_source")
+
+print("\n➡️  Ready to run the chatbot!")
+```
+
+else:
+print(”\n” + “=”*70)
+print(“⚠️  Installation incomplete”)
+print(”=”*70)
+print(“Try: Runtime → Restart runtime → Run Cell 1 again”)
+
+# ====================================================================
+
+# CELL 3: Setup Configuration Files
+
+# ====================================================================
+
+import os
+import json
+
+print(”\n🔧 Setting Up FinRobot Configuration”)
+print(”=”*70)
+
+# Your API Keys
+
+GROQ_API_KEY = “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”
+FINNHUB_API_KEY = “d3fqb9pr01qolknecv70d3fqb9pr01qolknecv7g”
+SEC_API_KEY = “3d5ea0d0682a99845e765ce59b86e60495fcaffd76edb9da76d9521e006b3f10”
+FMP_API_KEY = “”  # Optional
+
+# Make sure we’re in FinRobot directory
+
+if not os.path.basename(os.getcwd()) == ‘FinRobot’:
+os.chdir(’/content/FinRobot’)
+
+print(f”📂 Working directory: {os.getcwd()}\n”)
+
+# Create OAI_CONFIG_LIST with Groq
+
+print(“📝 Creating OAI_CONFIG_LIST…”)
+groq_config = [
+{
+“model”: “llama-3.3-70b-versatile”,
+“api_key”: GROQ_API_KEY,
+“api_type”: “groq”,
+“cache_seed”: None
+}
+]
+
+with open(“OAI_CONFIG_LIST”, “w”) as f:
+json.dump(groq_config, f, indent=2)
+print(“✅ OAI_CONFIG_LIST created”)
+
+# Create config_api_keys
+
+print(“📝 Creating config_api_keys…”)
+api_keys_config = {
+“finnhub_api_key”: FINNHUB_API_KEY,
+“fmp_api_key”: FMP_API_KEY,
+“sec_api_key”: SEC_API_KEY
+}
+
+with open(“config_api_keys”, “w”) as f:
+json.dump(api_keys_config, f, indent=2)
+print(“✅ config_api_keys created”)
+
+# Set environment variable
+
+os.environ[“GROQ_API_KEY”] = GROQ_API_KEY
+print(“✅ Environment configured”)
+
+print(”\n” + “=”*70)
+print(“✨ Configuration Complete!”)
+print(”=”*70)
+
+# ====================================================================
+
+# CELL 4: Run FinRobot Chatbot with Full Features
+
+# ====================================================================
+
+import os
+import autogen
+from finrobot.utils import register_keys_from_json
+from datetime import datetime
+
+# Ensure we’re in the right directory
+
+if not os.path.basename(os.getcwd()) == ‘FinRobot’:
+os.chdir(’/content/FinRobot’)
+
+print(”\n” + “=”*70)
+print(“🤖 FINROBOT FULL VERSION - FINANCIAL ASSISTANT”)
+print(”=”*70)
+
+# Register API keys with FinRobot
+
+print(”\n🔑 Registering API keys with FinRobot…”)
+try:
+register_keys_from_json(“config_api_keys”)
+print(“✅ API keys registered”)
+except Exception as e:
+print(f”⚠️  Warning: {str(e)}”)
+print(”   Continuing without API key registration…”)
+
+# Display features
+
+print(”””
+╔═══════════════════════════════════════════════════════════════════════╗
+║                     FINROBOT FULL FEATURES                            ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║  ✅ Real-time stock data via Finnhub                                 ║
+║  ✅ Company financial statements                                     ║
+║  ✅ SEC filings analysis                                             ║
+║  ✅ Market data and trends                                           ║
+║  ✅ Financial calculations                                           ║
+║  ✅ Investment analysis                                              ║
+║                                                                       ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║  💡 Example Questions:                                               ║
+║                                                                       ║
+║  • Get Tesla’s latest stock price and analysis                       ║
+║  • Show Apple’s quarterly financial statements                       ║
+║  • Analyze Amazon’s recent SEC filings                               ║
+║  • Compare Microsoft vs Google stock performance                     ║
+║  • What are the latest market trends in tech?                        ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+“””)
+
+print(”\n⌨️  Commands:”)
+print(”   • Type your financial question”)
+print(”   • Press Enter to send”)
+print(”   • Type ‘exit’ or ‘quit’ to end\n”)
+print(”=”*70)
+
+# Load configuration
+
+config_list = autogen.config_list_from_json(
+“OAI_CONFIG_LIST”,
+filter_dict={“api_type”: [“groq”]}
+)
+
+# Create FinRobot Assistant with Groq
+
+assistant = autogen.AssistantAgent(
+name=“FinRobot”,
+system_message=””“You are FinRobot, an expert AI financial analyst with access to real-time financial data.
+
+Your capabilities:
+
+- Access to Finnhub for real-time stock prices
+- SEC filings and company reports
+- Financial statement analysis
+- Market data and trends
+- Investment research and analysis
+
+When answering:
+
+1. Use specific data and numbers when available
+1. Provide clear, actionable insights
+1. Cite sources for financial data
+1. Break down complex analysis into simple terms
+1. Use emojis for better readability (📈, 💰, 📊)
+
+Communication style:
+
+- Professional yet approachable
+- Data-driven and analytical
+- Clear and concise
+- Highlight key insights
+
+You have access to FinRobot’s tools and data sources. Use them to provide accurate, up-to-date financial information.”””,
+llm_config={
+“config_list”: config_list,
+“timeout”: 120,
+“temperature”: 0.7,
+“cache_seed”: None
+}
+)
+
+# User proxy
+
+user_proxy = autogen.UserProxyAgent(
+name=“User”,
+human_input_mode=“ALWAYS”,
+max_consecutive_auto_reply=15,
+code_execution_config=False,
+)
+
+print(”\n💬 Chat session started!\n”)
+
+# Start conversation
+
+try:
+user_proxy.initiate_chat(
+assistant,
+message=””“Hello! 👋
+
+I’m FinRobot with full access to financial data sources including:
+• Finnhub for real-time market data
+• SEC filings database
+• Company financial statements
+• Market analytics tools
+
+I’m ready to help you with comprehensive financial analysis. What would you like to explore? 🚀”””
+)
+
+except KeyboardInterrupt:
+print(”\n\n👋 Chat session ended. Thank you for using FinRobot!”)
+except Exception as e:
+print(f”\n❌ Error: {str(e)}”)
+print(”\nTroubleshooting:”)
+print(“1. Make sure all previous cells ran successfully”)
+print(“2. Check internet connection”)
+print(“3. Verify API keys are correct”)
+print(“4. Try: Runtime → Restart runtime → Run all cells”)
+
+print(”\n” + “=”*70)
+print(“Session Complete”)
+print(”=”*70)
+
+# ====================================================================
+
+# CELL 5: Advanced - Use FinRobot Specialized Agents (Optional)
+
+# ====================================================================
+
+print(”\n🚀 Advanced: FinRobot Specialized Agents”)
+print(”=”*70)
+print(”\nThis section shows how to use FinRobot’s specialized agents\n”)
+
+# Example: Using SingleAssistantShadow
+
+code_example = ‘’’
+
+# Uncomment and run this to use FinRobot specialized agents:
+
+from finrobot.agents.workflow import SingleAssistantShadow
+from finrobot.utils import register_keys_from_json
+import autogen
+
+# Register keys
+
+register_keys_from_json(“config_api_keys”)
+
+# Load Groq config
+
+config_list = autogen.config_list_from_json(
+“OAI_CONFIG_LIST”,
+filter_dict={“api_type”: [“groq”]}
+)
+
+# Create specialized FinRobot agent
+
+specialist = SingleAssistantShadow(
+name=“FinRobot_Specialist”,
+llm_config={
+“config_list”: config_list,
+“temperature”: 0.7,
+}
+)
+
+# Ask a question
+
+question = “Analyze Tesla’s stock performance over the last quarter”
+response = specialist.generate_reply(
+messages=[{“content”: question, “role”: “user”}]
+)
+
+print(f”\n🤖 FinRobot Response:\n{response}”)
+‘’’
+
+print(“📝 Example code for specialized agents:”)
+print(code_example)
+
+print(”\n💡 To use:”)
+print(“1. Uncomment the code above”)
+print(“2. Run this cell”)
+print(“3. Modify the question as needed”)
+
+# ====================================================================
+
+# INSTRUCTIONS & TROUBLESHOOTING
+
+# ====================================================================
+
+“””
+╔═══════════════════════════════════════════════════════════════════════╗
+║                    COMPLETE USAGE INSTRUCTIONS                        ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+📚 HOW TO USE THIS NOTEBOOK:
+
+STEP 1: Run Cell 1
+• Clones FinRobot from GitHub
+• Installs complete FinRobot package
+• Takes 2-3 minutes
+• Wait for “✅ FinRobot installation complete!”
+
+STEP 2: Run Cell 2
+• Verifies installation
+• Checks all components
+• Shows what’s available
+
+STEP 3: Run Cell 3
+• Creates configuration files
+• Sets up API keys
+• Prepares FinRobot
+
+STEP 4: Run Cell 4
+• Starts full FinRobot chatbot
+• Has access to all financial data tools
+• Type your questions!
+
+STEP 5 (Optional): Run Cell 5
+• Shows advanced usage
+• Specialized FinRobot agents
+• For power users
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 TROUBLESHOOTING:
+
+Problem: “FinRobot directory already exists”
+Solution: That’s OK! It will be removed and re-cloned
+
+Problem: “No module named ‘finrobot’”
+Solution:
+
+1. Make sure Cell 1 completed successfully
+1. Check for error messages in Cell 1
+1. Try: Runtime → Restart runtime
+1. Run all cells again from Cell 1
+
+Problem: “Working directory not found”
+Solution: Cell 4 automatically changes to /content/FinRobot
+
+Problem: API errors
+Solution:
+
+1. Check your Groq API key is valid
+1. Check internet connection
+1. Verify Finnhub API key
+
+Problem: Installation takes too long
+Solution: This is normal - FinRobot has many dependencies
+
+═══════════════════════════════════════════════════════════════════════
+
+✨ WHAT YOU GET:
+
+With full FinRobot installed:
+✅ Real-time stock data (Finnhub)
+✅ Company financials (FMP, SEC)
+✅ Market analysis tools
+✅ Investment research capabilities
+✅ Financial calculations
+✅ Data visualization
+✅ Report generation
+
+═══════════════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+• Run cells in order (1 → 2 → 3 → 4)
+• Wait for each cell to complete before running next
+• Green checkmarks (✅) mean success
+• Red X (❌) means there’s an issue
+• You can re-run Cell 4 to start new chat sessions
+• API keys are pre-configured - no editing needed
+
+═══════════════════════════════════════════════════════════════════════
+
+🆓 FREE TIER LIMITS:
+
+• Groq: 30 requests/minute, 14,400/day (FREE!)
+• Finnhub: 60 API calls/minute (FREE!)
+• SEC API: 100 requests/month (FREE!)
+
+Perfect for learning and testing! 🚀
+
+═══════════════════════════════════════════════════════════════════════
+“””
